@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Weather Plot</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+  <h2>Last 5 Days Temperature</h2>
+  <input id="city" type="text" placeholder="Enter city name">
+  <button onclick="getWeather()">Get Weather</button>
+  <div id="plot"></div>
+
+  <script>
+    async function getWeather() {
+      const city = document.getElementById("city").value;
+      const response = await fetch(`/weather?city=${city}`);
+      const data = await response.json();
+
+      if (data.error) {
+        alert(data.error);
+        return;
+      }
+
+      const dates = data.map(d => d.date);
+      const temps = data.map(d => d.temp);
+
+      Plotly.newPlot('plot', [{
+        x: dates,
+        y: temps,
+        type: 'scatter',
+        mode: 'lines+markers',
+        name: 'Temperature'
+      }], {
+        title: `Weather in ${city}`,
+        xaxis: { title: 'Date' },
+        yaxis: { title: 'Temperature (°C)' }
+      });
+    }
+  </script>
+</body>
+</html>
